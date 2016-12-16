@@ -1,0 +1,19 @@
+{
+  "name": "release-man",
+  "version": "1.0.0",
+  "description": "听说你发布新分支的时候特别的累",
+  "main": "index.js",
+  "bin": {
+    "release": "bin/release"
+  },
+  "repository": "https://github.com/malcolmyu/release-man.git",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["release"],
+  "author": "malcolmyu",
+  "license": "WTFPL",
+  "dependencies": {
+    "inquirer": "^2.0.0"
+  }
+}
