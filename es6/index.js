@@ -50,7 +50,7 @@ async function publish() {
       name: 'tag',
       message: '请输入要添加的 npm tag:',
       validate: (content) => {
-        if (!content) {
+        if (content) {
           return true;
         }
         return '请输入 npm tag';
