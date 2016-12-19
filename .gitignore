@@ -2,3 +2,4 @@ lib
 .idea
 .vscode
 node_modules
+npm-debug.log
