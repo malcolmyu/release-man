@@ -120,9 +120,11 @@ async function publish() {
     }
 
     // 本地源各种推代码和推分支
-    await ep(exec)(`git push ${remote.gitlab} ${branch}`);
-    await ep(exec)(`git tag ${nextRef}`);
-    await ep(exec)(`git push ${remote.gitlab} ${nextRef}`);
+    if (remote.gitlab) {
+      await ep(exec)(`git push ${remote.gitlab} ${branch}`);
+      await ep(exec)(`git tag ${nextRef}`);
+      await ep(exec)(`git push ${remote.gitlab} ${nextRef}`);
+    }
 
     log.done(`代码和 tag 已 push 到 gitlab`);
 
