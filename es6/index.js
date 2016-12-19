@@ -5,6 +5,8 @@ const chalk = require('chalk');
 const ep = require('es6-promisify');
 const { exec } = require('child_process');
 
+const caesar = require('./crypter');
+
 const log = {
   done: msg => console.log(chalk.green(`✓ ${msg}`)),
   error: err => console.log(chalk.red(`× ${err}`)),
@@ -16,19 +18,19 @@ const cwd = process.cwd();
 const pkgPath = path.join(cwd, 'package.json');
 const pkg = fs.readFileSync(pkgPath, 'utf8');
 const content = JSON.parse(pkg);
-const rversion = /^\d+\.\d+\.\d+(?:-(.+))?$/;
+const rVersion = /^\d+\.\d+\.\d+(?:-(.+))?$/;
 
 async function publish() {
-  const cversion = content.version;
+  const cVersion = content.version;
 
   const questions = [
     {
       type: 'input',
       name: 'version',
       message: '请输入要发布的版本号:',
-      default: cversion,
+      default: cVersion,
       validate: (content) => {
-        if (rversion.test(content) || !content) {
+        if (rVersion.test(content) || !content) {
           return true;
         }
         return `版本号 ${content} 不合法，正确的格式应为: 1.0.2 或 2.3.0-beta.1`
@@ -39,7 +41,7 @@ async function publish() {
       name: 'useTag',
       message: '检测到版本号携带 tag, 是否添加 npm tag?',
       when: (answers) => {
-        const match = answers.version.match(rversion);
+        const match = answers.version.match(rVersion);
         return match && match[1];
       }
     },
@@ -64,20 +66,31 @@ async function publish() {
   ];
   try {
     const { version, tag, github } = await inquirer.prompt(questions);
-    const branch = await getCurrnetBranch();
+    const branch = await getCurrentBranch();
     const remote = await parseRemote();
     const { name } = content;
     const nextRef = `v${version}`;
-    const rqnpm = /^@qnpm/;
-    const registry = rqnpm.test(name) ?
-      'http://registry.npm.corp.qunar.com/' :
-      'https://registry.npmjs.org/';
+    const rQNpm = /^@qnpm/;
+    const toQNpm = rQNpm.test(name);
+    const qNpmRegistry = caesar.decode('iuuq;00sfhjtusz/oqn/dpsq/rvobs/dpn0');
+    const registry = toQNpm ? qNpmRegistry : 'https://registry.npmjs.org/';
     if (github && !remote.github) throw new Error('本地无法找到 github 的 remote!');
 
-    if (cversion === version) {
-      await ep(exec)(`npm unpublish ${name}@${version} --registry=${registry}`);
+    const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
+    const info = eval(`global.npmInfo=${sInfo}`);
 
-      log.done(`${name}@${version} 已 unpublish`);
+    if (cVersion === version) {
+      if (!toQNpm) {
+        // 发布到 npm 源
+        log.info(`在 npm 源上最好不要卸载 ${version} 版本`);
+        if (global.npmInfo.versions.indexOf(version) > -1) {
+          throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
+        }
+        delete global.npmInfo;
+      } else {
+        await ep(exec)(`npm unpublish ${name}@${version} --registry=${registry}`);
+        log.done(`${name}@${version} 已 unpublish`);
+      }
 
       try {
         await ep(exec)(`git tag -d ${nextRef}`);
@@ -136,10 +149,10 @@ async function updateVersion(version) {
 
 async function parseRemote() {
   const remotes = await ep(exec)(`git remote -v`);
-  const rgitlab = /(\w+)\s+.+gitlab.+/;
-  const rgithub = /(\w+)\s+.+github.+/;
-  const gitlabMatched = remotes.match(rgitlab);
-  const githubMatched = remotes.match(rgithub);
+  const rGitlab = /(\w+)\s+.+gitlab.+/;
+  const rGithub = /(\w+)\s+.+github.+/;
+  const gitlabMatched = remotes.match(rGitlab);
+  const githubMatched = remotes.match(rGithub);
 
   const remote = {};
 
@@ -149,7 +162,7 @@ async function parseRemote() {
   return remote;
 }
 
-async function getCurrnetBranch() {
+async function getCurrentBranch() {
   return await ep(exec)('git describe --contains --all HEAD');
 }
 
