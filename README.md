@@ -24,7 +24,7 @@ $ release
 ✓ 版本 1.2.0-beta.1 发布成功!
 ```
 
-
+![image](http://ww4.sinaimg.cn/mw690/7921624bgw1faw1q0o7usg20dv0dit9m.gif)
 
 ## 流程
 
