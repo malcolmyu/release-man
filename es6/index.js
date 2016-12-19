@@ -127,7 +127,7 @@ async function publish() {
     log.done(`代码和 tag 已 push 到 gitlab`);
 
     if (github && remote.github) {
-      await ep(`git push ${remote.github} ${branch}`);
+      await ep(exec)(`git push ${remote.github} ${branch}`);
       await ep(exec)(`git push ${remote.github} ${nextRef}`);
       log.done(`代码和 tag 已 push 到 github`);
     }
