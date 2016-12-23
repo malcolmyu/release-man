@@ -1,39 +1,40 @@
 {
-  "name": "release-man",
-  "version": "1.2.4",
-  "description": "听说你发布新分支的时候特别的累",
-  "files": [
-    "*.md",
-    "es6",
-    "lib",
-    "bin"
-  ],
-  "main": "index.js",
-  "jsnext:main": "es6/index",
-  "bin": {
-    "release": "bin/release"
-  },
-  "repository": "https://github.com/malcolmyu/release-man.git",
-  "scripts": {
-    "build": "babel es6 --out-dir lib",
-    "watch": "babel es6 --out-dir lib -w",
-    "prepublish": "npm run build"
-  },
-  "keywords": [
-    "release"
-  ],
-  "author": "malcolmyu",
-  "license": "WTFPL",
-  "dependencies": {
-    "babel-runtime": "^6.20.0",
-    "chalk": "^1.1.3",
-    "es6-promisify": "^5.0.0",
-    "inquirer": "^2.0.0"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-transform-runtime": "^6.15.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-stage-3": "^6.17.0"
-  }
+    "name": "release-man",
+    "version": "1.2.5",
+    "description": "听说你发布新分支的时候特别的累",
+    "files": [
+        "*.md",
+        "es6",
+        "lib",
+        "bin"
+    ],
+    "main": "index.js",
+    "jsnext:main": "es6/index",
+    "bin": {
+        "release": "bin/release"
+    },
+    "repository": "https://github.com/malcolmyu/release-man.git",
+    "scripts": {
+        "build": "babel es6 --out-dir lib",
+        "watch": "babel es6 --out-dir lib -w",
+        "prepublish": "npm run build"
+    },
+    "keywords": [
+        "release"
+    ],
+    "author": "malcolmyu",
+    "license": "WTFPL",
+    "dependencies": {
+        "babel-runtime": "^6.20.0",
+        "chalk": "^1.1.3",
+        "commander": "^2.9.0",
+        "es6-promisify": "^5.0.0",
+        "inquirer": "^2.0.0"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.18.0",
+        "babel-plugin-transform-runtime": "^6.15.0",
+        "babel-preset-es2015": "^6.18.0",
+        "babel-preset-stage-3": "^6.17.0"
+    }
 }
