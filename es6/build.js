@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const ep = require('es6-promisify');
 const { exec } = require('child_process');
+const ora = require('ora');
 
 const caesar = require('./crypter');
 
@@ -19,6 +20,8 @@ const pkgPath = path.join(cwd, 'package.json');
 const pkg = fs.readFileSync(pkgPath, 'utf8');
 const content = JSON.parse(pkg);
 const rVersion = /^\d+\.\d+\.\d+(?:-(.+))?$/;
+
+let spinner = ora({ text: '检查 npm 源'});
 
 async function publish() {
     const cVersion = content.version;
@@ -65,6 +68,7 @@ async function publish() {
         }
     ];
     try {
+
         const { version, tag, github } = await inquirer.prompt(questions);
         const branch = await getCurrentBranch();
         const remote = await parseRemote();
@@ -76,49 +80,55 @@ async function publish() {
         const registry = toQNpm ? qNpmRegistry : 'https://registry.npmjs.org/';
         if (github && !remote.github) throw new Error('本地无法找到 github 的 remote!');
 
+        spinner.start();
+
         const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
         const info = eval(`global.npmInfo=${sInfo}`);
 
         if (cVersion === version) {
             if (!toQNpm) {
                 // 发布到 npm 源
-                log.info(`在 npm 源上最好不要卸载 ${version} 版本`);
                 if (global.npmInfo.versions.indexOf(version) > -1) {
                     throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
                 }
                 delete global.npmInfo;
             } else {
+                spinner.text = `移除私有源上已发布的版本 ${name}@${version}`;
                 await ep(exec)(`npm unpublish ${name}@${version} --registry=${registry}`);
                 log.done(`${name}@${version} 已 unpublish`);
             }
 
+            spinner.text = `移除本地 tag: ${nextRef}`;
             try {
                 await ep(exec)(`git tag -d ${nextRef}`);
             } catch (e) {
-                log.dim(`本地不存在 ${nextRef} 分支`);
+                log.dim(`本地不存在 ${nextRef} tag`);
             }
 
+            spinner.text = `移除线上 tag: ${nextRef}`;
             try {
                 await ep(exec)(`git push ${remote.gitlab} -d tag ${nextRef}`);
             } catch (e) {
-                log.dim(`gitlab 上不存在 ${nextRef} 分支`);
+                log.dim(`gitlab 上不存在 ${nextRef} tag`);
             }
 
             if (github && remote.github) {
                 try {
                     await ep(exec)(`git push ${remote.github} -d tag ${nextRef}`);
                 } catch (e) {
-                    log.dim(`github 上不存在 ${nextRef} 分支`);
+                    log.dim(`github 上不存在 ${nextRef} tag`);
                 }
             }
 
-            log.done(`分支 ${nextRef} 移除成功`);
+            log.done(`tag ${nextRef} 移除成功`);
         } else {
+            spinner.text = `更新 package.json 到: ${version}`;
             await updateVersion(version);
             await ep(exec)(`git commit -am "chore: Version to ${version}"`);
             log.done(`package.json 的版本已更新到 ${version}`);
         }
 
+        spinner.text = `推送本地代码到 gitlab`;
         // 本地源各种推代码和推分支
         if (remote.gitlab) {
             await ep(exec)(`git push ${remote.gitlab} ${branch}`);
@@ -129,6 +139,7 @@ async function publish() {
         log.done(`代码和 tag 已 push 到 gitlab`);
 
         if (github && remote.github) {
+            spinner.text = `推送本地代码到 github`;
             await ep(exec)(`git push ${remote.github} ${branch}`);
             await ep(exec)(`git push ${remote.github} ${nextRef}`);
             log.done(`代码和 tag 已 push 到 github`);
@@ -136,10 +147,15 @@ async function publish() {
 
         const tagName = tag ? ` --tag ${tag}` : '';
 
+        spinner.text = `发布新版本到 npm 源`;
+
         await ep(exec)(`npm publish --registry=${registry}${tagName}`);
 
+        spinner.stop();
         log.done(`版本 ${version} 发布成功!`);
     } catch (e) {
+        spinner.stop();
+        spinner.clear();
         log.error(e.message);
     }
 }
