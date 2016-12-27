@@ -181,7 +181,7 @@ async function publish() {
 
 async function updateVersion(version) {
     content.version = version;
-    await ep(fs.writeFile)(pkgPath, JSON.stringify(content, null, 4), 'utf8');
+    await ep(fs.writeFile)(pkgPath, JSON.stringify(content, null, 2), 'utf8');
 }
 
 async function parseRemote() {
