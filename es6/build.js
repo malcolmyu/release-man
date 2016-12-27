@@ -9,7 +9,7 @@ const ora = require('ora');
 const caesar = require('./crypter');
 
 const log = {
-    done: msg => console.log(chalk.green(`✓ ${msg}`)),
+    done: msg => console.log(chalk.green(`✔ ${msg}`)),
     error: err => console.log(chalk.red(`× ${err}`)),
     info: msg => console.log(chalk.blue(`△ ${msg}`)),
     dim: msg => console.log(chalk.dim(`◎ ${msg}`))
@@ -169,7 +169,8 @@ async function publish() {
         await ep(exec)(`npm publish --registry=${registry}${tagName}`);
 
         spinner.succeed();
-        log.done(`版本 ${version} 发布成功!最后祝您，身体健康，再见!`);
+        log.done(`版本 ${version} 发布成功!`);
+        log.done(`最后祝您, 身体健康, 再见!`)
     } catch (e) {
         spinner.text = e.message;
         spinner.fail();
