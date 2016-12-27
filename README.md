@@ -14,17 +14,20 @@ $ npm install -g release-man
 
 ```bash
 $ release
-? 请输入要发布的版本号: 1.2.0-beta.1
+? 请输入要发布的版本号: 1.2.8-beta.2
 ? 检测到版本号携带 tag, 是否添加 npm tag? Yes
 ? 请输入要添加的 npm tag: beta
 ? 是否同步到 github? Yes
-✓ package.json 的版本已更新到 1.2.0-beta.1
-✓ 代码和 tag 已 push 到 gitlab
-✓ 代码和 tag 已 push 到 github
-✓ 版本 1.2.0-beta.1 发布成功!
+✔ 检查 npm 源
+✔ 更新 package.json 到: 1.2.8-beta.2
+✔ 推送本地代码到 gitlab
+✔ 推送本地代码到 github
+✔ 发布新版本 1.2.8-beta.2 到 npm 源
+✔ 版本 1.2.8-beta.2 发布成功!
+✔ 最后祝您, 身体健康, 再见!
 ```
 
-![image](http://ww4.sinaimg.cn/mw690/7921624bgw1faw1q0o7usg20dv0dit9m.gif)
+![image](http://ww4.sinaimg.cn/large/7921624bgw1fb586xnb61g20ec0awhdt.gif)
 
 ## 流程
 
