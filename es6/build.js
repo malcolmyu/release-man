@@ -92,69 +92,84 @@ async function publish() {
                     throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
                 }
                 delete global.npmInfo;
+                spinner.succeed();
             } else {
-                spinner = ora({ text: `移除私有源上已发布的版本 ${name}@${version}` });
+                spinner.text = `移除私有源上已发布的版本 ${name}@${version}`;
                 await ep(exec)(`npm unpublish ${name}@${version} --registry=${registry}`);
                 spinner.text = `${name}@${version} 已 unpublish`;
                 spinner.succeed();
             }
 
             spinner = ora({ text: `移除本地 tag: ${nextRef}` });
+            spinner.start();
             try {
                 await ep(exec)(`git tag -d ${nextRef}`);
+                spinner.succeed();
             } catch (e) {
                 spinner.text = `本地不存在 ${nextRef} tag`;
                 spinner.stopAndPersist('◎');
             }
 
-            spinner.text = `移除线上 tag: ${nextRef}`;
+            spinner = ora({ text: `移除 gitlab 线上 tag: ${nextRef}` });
+            spinner.start();
             try {
                 await ep(exec)(`git push ${remote.gitlab} -d tag ${nextRef}`);
+                spinner.succeed();
             } catch (e) {
-                log.dim(`gitlab 上不存在 ${nextRef} tag`);
+                spinner.text = `gitlab 上不存在 ${nextRef} tag`;
+                spinner.stopAndPersist('◎');
             }
 
             if (github && remote.github) {
+                spinner = ora({ text: `移除 github 线上 tag: ${nextRef}` });
+                spinner.start();
                 try {
                     await ep(exec)(`git push ${remote.github} -d tag ${nextRef}`);
+                    spinner.succeed();
                 } catch (e) {
-                    log.dim(`github 上不存在 ${nextRef} tag`);
+                    spinner.text = `github 上不存在 ${nextRef} tag`;
+                    spinner.stopAndPersist('◎');
                 }
             }
-
-            log.done(`tag ${nextRef} 移除成功`);
         } else {
-            spinner.text = `更新 package.json 到: ${version}`;
+            spinner = ora({ text: `更新 package.json 到: ${version}` });
+            spinner.start();
             await updateVersion(version);
             await ep(exec)(`git commit -am "chore: Version to ${version}"`);
-            log.done(`package.json 的版本已更新到 ${version}`);
+            spinner.succeed();
         }
 
-        spinner.text = `推送本地代码到 gitlab`;
         // 本地源各种推代码和推分支
         if (remote.gitlab) {
+            spinner = ora({ text: `推送本地代码到 gitlab` });
+            spinner.start();
+
             await ep(exec)(`git push ${remote.gitlab} ${branch}`);
             await ep(exec)(`git tag ${nextRef}`);
             await ep(exec)(`git push ${remote.gitlab} ${nextRef}`);
+
+            spinner.succeed();
         }
 
-        log.done(`代码和 tag 已 push 到 gitlab`);
-
         if (github && remote.github) {
-            spinner.text = `推送本地代码到 github`;
+            spinner = ora({ text: `推送本地代码到 github` });
+            spinner.start();
+
             await ep(exec)(`git push ${remote.github} ${branch}`);
             await ep(exec)(`git push ${remote.github} ${nextRef}`);
-            log.done(`代码和 tag 已 push 到 github`);
+
+            spinner.succeed();
         }
 
         const tagName = tag ? ` --tag ${tag}` : '';
 
-        spinner.text = `发布新版本到 npm 源`;
+        spinner = ora({ text: `发布新版本 ${version} 到 npm 源` });
+        spinner.start();
 
         await ep(exec)(`npm publish --registry=${registry}${tagName}`);
 
-        spinner.stop();
-        log.done(`版本 ${version} 发布成功!`);
+        spinner.succeed();
+        log.done(`版本 ${version} 发布成功!最后祝您，身体健康，再见!`);
     } catch (e) {
         spinner.text = e.message;
         spinner.fail();
