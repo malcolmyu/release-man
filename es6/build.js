@@ -132,6 +132,8 @@ async function publish() {
                 }
             }
         } else {
+            // 检查 npm 源成功
+            spinner.succeed();
             spinner = ora({ text: `更新 package.json 到: ${version}` });
             spinner.start();
             await updateVersion(version);
