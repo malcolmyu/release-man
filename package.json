@@ -1,7 +1,7 @@
 {
     "name": "release-man",
     "version": "1.2.8",
-    "description": "听说你发布新分支的时候特别的累",
+    "description": "听说你发布新版本的时候特别的累",
     "files": [
         "*.md",
         "es6",
