@@ -93,16 +93,18 @@ async function publish() {
                 }
                 delete global.npmInfo;
             } else {
-                spinner.text = `移除私有源上已发布的版本 ${name}@${version}`;
+                spinner = ora({ text: `移除私有源上已发布的版本 ${name}@${version}` });
                 await ep(exec)(`npm unpublish ${name}@${version} --registry=${registry}`);
-                log.done(`${name}@${version} 已 unpublish`);
+                spinner.text = `${name}@${version} 已 unpublish`;
+                spinner.succeed();
             }
 
-            spinner.text = `移除本地 tag: ${nextRef}`;
+            spinner = ora({ text: `移除本地 tag: ${nextRef}` });
             try {
                 await ep(exec)(`git tag -d ${nextRef}`);
             } catch (e) {
-                log.dim(`本地不存在 ${nextRef} tag`);
+                spinner.text = `本地不存在 ${nextRef} tag`;
+                spinner.stopAndPersist('◎');
             }
 
             spinner.text = `移除线上 tag: ${nextRef}`;
@@ -154,9 +156,8 @@ async function publish() {
         spinner.stop();
         log.done(`版本 ${version} 发布成功!`);
     } catch (e) {
-        spinner.stop();
-        spinner.clear();
-        log.error(e.message);
+        spinner.text = e.message;
+        spinner.fail();
     }
 }
 
