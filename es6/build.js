@@ -82,13 +82,18 @@ async function publish() {
 
         spinner.start();
 
-        const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
-        const info = eval(`global.npmInfo=${sInfo}`);
+        try {
+            const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
+            const info = eval(`global.npmInfo=${sInfo}`);
+        } catch(e) {
+            // npm 源上根本没有这个项目
+            global.npmInfo = null;
+        }
 
         if (cVersion === version) {
             if (!toQNpm) {
                 // 发布到 npm 源
-                if (global.npmInfo.versions.indexOf(version) > -1) {
+                if (global.npmInfo && global.npmInfo.versions.indexOf(version) > -1) {
                     throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
                 }
                 delete global.npmInfo;
