@@ -1,19 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer');
-const chalk = require('chalk');
 const ep = require('es6-promisify');
 const { exec } = require('child_process');
 const ora = require('ora');
 
 const caesar = require('./crypter');
+const utils = require('./utils');
 
-const log = {
-    done: msg => console.log(chalk.green(`✔ ${msg}`)),
-    error: err => console.log(chalk.red(`× ${err}`)),
-    info: msg => console.log(chalk.blue(`△ ${msg}`)),
-    dim: msg => console.log(chalk.dim(`◎ ${msg}`))
-};
+const {
+    log,
+    updateVersion,
+    parseRemote,
+    getCurrentBranch
+} = utils;
 
 const cwd = process.cwd();
 const pkgPath = path.join(cwd, 'package.json');
@@ -21,7 +21,7 @@ const pkg = fs.readFileSync(pkgPath, 'utf8');
 const content = JSON.parse(pkg);
 const rVersion = /^\d+\.\d+\.\d+(?:-(.+))?$/;
 
-let spinner = ora({ text: '检查 npm 源'});
+let spinner = ora({ text: '检查 npm 源' });
 
 async function publish() {
     const cVersion = content.version;
@@ -36,7 +36,7 @@ async function publish() {
                 if (rVersion.test(content) || !content) {
                     return true;
                 }
-                return `版本号 ${content} 不合法，正确的格式应为: 1.0.2 或 2.3.0-beta.1`
+                return `版本号 ${content} 不合法，正确的格式应为: 1.0.2 或 2.3.0-beta.1`;
             }
         },
         {
@@ -68,7 +68,6 @@ async function publish() {
         }
     ];
     try {
-
         const { version, tag, github } = await inquirer.prompt(questions);
         const branch = await getCurrentBranch();
         const remote = await parseRemote();
@@ -84,8 +83,10 @@ async function publish() {
 
         try {
             const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
-            const info = eval(`global.npmInfo=${sInfo}`);
-        } catch(e) {
+            /* eslint-disable no-eval */
+            eval(`global.npmInfo=${sInfo}`);
+            /* eslint-enable no-eval */
+        } catch (e) {
             // npm 源上根本没有这个项目
             global.npmInfo = null;
         }
@@ -177,35 +178,11 @@ async function publish() {
 
         spinner.succeed();
         log.done(`版本 ${version} 发布成功!`);
-        log.done(`最后祝您, 身体健康, 再见!`)
+        log.done(`最后祝您, 身体健康, 再见!`);
     } catch (e) {
         spinner.text = e.message;
         spinner.fail();
     }
-}
-
-async function updateVersion(version) {
-    content.version = version;
-    await ep(fs.writeFile)(pkgPath, JSON.stringify(content, null, 2), 'utf8');
-}
-
-async function parseRemote() {
-    const remotes = await ep(exec)(`git remote -v`);
-    const rGitlab = /(\w+)\s+.+gitlab.+/;
-    const rGithub = /(\w+)\s+.+github.+/;
-    const gitlabMatched = remotes.match(rGitlab);
-    const githubMatched = remotes.match(rGithub);
-
-    const remote = {};
-
-    if (gitlabMatched && gitlabMatched[1]) remote.gitlab = gitlabMatched[1];
-    if (githubMatched && githubMatched[1]) remote.github = githubMatched[1];
-
-    return remote;
-}
-
-async function getCurrentBranch() {
-    return await ep(exec)('git describe --contains --all HEAD');
 }
 
 export default publish;
