@@ -1,5 +1,8 @@
 # Release-Man
 
+[![Build Status](https://travis-ci.org/malcolmyu/release-man.svg?branch=master)](https://travis-ci.org/malcolmyu/release-man)
+[![npm](https://img.shields.io/npm/v/release-man.svg?maxAge=60)](https://www.npmjs.com/package/release-man)
+
 一键 Npm 发布工具，包括在内部源上卸载旧版本、删除原有 tag，打新 tag，推送代码至 github，发布新版本，打 rc-tag 等。
 
 ## 安装
