@@ -1,6 +1,6 @@
 {
   "name": "release-man",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "听说你发布新版本的时候特别的累",
   "files": [
     "*.md",
