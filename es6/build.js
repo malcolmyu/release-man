@@ -7,6 +7,7 @@ const ora = require('ora');
 
 const caesar = require('./crypter');
 const utils = require('./utils');
+const sync = require('./sync');
 
 const {
     log,
@@ -64,7 +65,13 @@ async function publish() {
             type: 'confirm',
             name: 'github',
             message: '是否同步到 github?',
-            default: false
+            default: true
+        },
+        {
+            type: 'confirm',
+            name: 'cnpm',
+            message: '是否强制同步到内部源?',
+            default: true
         }
     ];
     try {
@@ -179,6 +186,14 @@ async function publish() {
         await ep(exec)(`npm publish --registry=${registry}${tagName}`);
 
         spinner.succeed();
+
+        spinner = ora({ text: `同步 ${name} 到内部源` });
+        spinner.start();
+
+        await sync(name);
+
+        spinner.start();
+
         log.done(`版本 ${version} 发布成功!`);
         log.done(`最后祝您, 身体健康, 再见!`);
     } catch (e) {
