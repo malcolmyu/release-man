@@ -86,8 +86,6 @@ async function publish() {
         const registry = toQNpm ? qNpmRegistry : 'https://registry.npmjs.org/';
         if (github && !remote.github) throw new Error('本地无法找到 github 的 remote!');
 
-        spinner.start();
-
         try {
             const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
             /* eslint-disable no-eval */
@@ -192,7 +190,7 @@ async function publish() {
 
         await sync(name);
 
-        spinner.start();
+        spinner.succeed();
 
         log.done(`版本 ${version} 发布成功!`);
         log.done(`最后祝您, 身体健康, 再见!`);

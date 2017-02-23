@@ -1,8 +1,8 @@
-const fetch = require('whatwg-fetch');
+const fetch = require('node-fetch');
 const caesar = require('./crypter');
 const domain = caesar.decode('iuuq;0021/1/75/22;81130');
 
-export default function syncInnerRegistry(name) {
-    return fetch(`${domain}/sync`, { method: 'PUT' })
-        .then((response) => { if (!response.ok) { throw new Error('response-error'); } });
+module.exports = function syncInnerRegistry(name) {
+    return fetch(`${domain}sync/${name}`, { method: 'PUT' })
+        .then((response) => { if (!response.ok) { throw new Error(response.statusText); } });
 };
