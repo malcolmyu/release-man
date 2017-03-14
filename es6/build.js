@@ -157,7 +157,7 @@ async function publish() {
             spinner = ora({ text: `推送本地代码到 gitlab` });
             spinner.start();
 
-            await ep(exec)(`git push ${remote.gitlab} ${branch}`);
+            await ep(exec)(`git push ${remote.gitlab}`);
             await ep(exec)(`git tag ${nextRef}`);
             await ep(exec)(`git push ${remote.gitlab} ${nextRef}`);
 
@@ -170,7 +170,7 @@ async function publish() {
 
             if (!remote.gitlab) await ep(exec)(`git tag ${nextRef}`);
 
-            await ep(exec)(`git push ${remote.github} ${branch}`);
+            await ep(exec)(`git push ${remote.github}`);
             await ep(exec)(`git push ${remote.github} ${nextRef}`);
 
             spinner.succeed();
