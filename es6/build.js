@@ -86,6 +86,9 @@ async function publish() {
         const registry = toQNpm ? qNpmRegistry : 'https://registry.npmjs.org/';
         if (github && !remote.github) throw new Error('本地无法找到 github 的 remote!');
 
+        spinner = ora({ text: '检测 npm 源' });
+        spinner.start();
+
         try {
             const sInfo = await ep(exec)(`npm info ${name} --registry=${registry}`);
             /* eslint-disable no-eval */
