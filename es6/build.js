@@ -12,8 +12,7 @@ const sync = require('./sync');
 const {
     log,
     updateVersion,
-    parseRemote,
-    getCurrentBranch
+    parseRemote
 } = utils;
 
 const cwd = process.cwd();
@@ -76,7 +75,6 @@ async function publish() {
     ];
     try {
         const { version, tag, github } = await inquirer.prompt(questions);
-        const branch = await getCurrentBranch();
         const remote = await parseRemote();
         const { name } = content;
         const nextRef = `v${version}`;
