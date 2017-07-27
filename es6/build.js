@@ -153,13 +153,14 @@ async function publish() {
             spinner.succeed();
         }
 
+        await ep(exec)(`git tag ${nextRef}`);
+
         // 本地源各种推代码和推分支
         if (remote.gitlab) {
             spinner = ora({ text: `推送本地代码到 gitlab` });
             spinner.start();
 
             await ep(exec)(`git push ${remote.gitlab}`);
-            await ep(exec)(`git tag ${nextRef}`);
             await ep(exec)(`git push ${remote.gitlab} ${nextRef}`);
 
             spinner.succeed();
@@ -168,8 +169,6 @@ async function publish() {
         if (github && remote.github) {
             spinner = ora({ text: `推送本地代码到 github` });
             spinner.start();
-
-            if (!remote.gitlab) await ep(exec)(`git tag ${nextRef}`);
 
             await ep(exec)(`git push ${remote.github}`);
             await ep(exec)(`git push ${remote.github} ${nextRef}`);
