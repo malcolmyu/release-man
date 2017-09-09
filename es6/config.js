@@ -124,6 +124,7 @@ export async function add(name) {
   let conf;
   if (/^@/.test(name)) {
     conf = await inquirer.prompt(addPrompts.slice(1));
+    conf.namespace = name;
   } else {
     conf = await inquirer.prompt(addPrompts);
   }

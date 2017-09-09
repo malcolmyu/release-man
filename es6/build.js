@@ -115,6 +115,7 @@ export default async () => {
     if (!conf) {
       log.error(`未检测到名为 ${ns} 的内部空间，请进行配置`);
       conf = await add(ns);
+      console.log(conf);
       config = getConfig();
     }
 

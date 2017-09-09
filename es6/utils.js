@@ -40,15 +40,16 @@ export async function getCurrentBranch() {
 }
 
 export function sync(name, urlList) {
-  return Promise.all(urlList.map(url =>
-    fetch(`${url}sync/${name}`, { method: 'PUT' })
+  return Promise.all(urlList.map(url => {
+    const u = /\/$/.test(url) ? url : `${url}/`;
+    return fetch(`${u}sync/${name}`, { method: 'PUT' })
       .then((response) => {
         if (!response.ok) {
           throw new Error(response.statusText);
         }
       }
-    )
-  ));
+    );
+  }));
 }
 
 export async function spinning(msg, cb) {
