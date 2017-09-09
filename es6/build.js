@@ -254,9 +254,13 @@ export default async () => {
       spinner = ora({ text: `同步到内网源` });
       spinner.start();
 
-      await sync(name, urlList);
-
-      spinner.succeed();
+      if (!urlList.length) {
+        spinner.text = '未选择内网源';
+        spinner.stopAndPersist('◎');
+      } else {
+        await sync(name, urlList);
+        spinner.succeed();
+      }
     }
 
     log.done(`版本 ${version} 发布成功!`);
