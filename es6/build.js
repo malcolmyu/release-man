@@ -10,6 +10,7 @@ import { getConfig, add } from './config';
 import {
   log,
   sync,
+  goodbye,
   updateVersion,
   parseRemote
 } from './utils';
@@ -257,7 +258,7 @@ export default async () => {
     }
 
     log.done(`版本 ${version} 发布成功!`);
-    log.done(`最后祝您, 身体健康, 再见!`);
+    log.done(goodbye());
   } catch (e) {
     spinner.text = e.message;
     spinner.fail();

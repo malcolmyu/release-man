@@ -60,3 +60,27 @@ export async function spinning(msg, cb) {
     ? spinner.succeed()
     : spinner.stopAndPersist('◎');
 }
+
+export function goodbye() {
+  const list = [
+    '提乾涉经',
+    '人群当中看见了一个光头',
+    '不要打架',
+    '身体健康',
+    '带着小姨子跑了',
+    '也是一个广♂东人',
+    '乖♂乖站好',
+    '吔屎啦',
+    '一百块都不给我',
+    '什么仇什么怨',
+    '大力出奇迹',
+    '倒戈卸甲, 以礼来降',
+    '妙啊, 快撤',
+    '瞬间爆炸',
+    'Are you OK',
+    '八百标兵奔北坡\n北坡炮兵并排跑\n炮兵怕把标兵碰\n标兵怕碰炮兵炮\n'
+  ];
+
+  const i = Math.floor(Math.random() * list.length);
+  return `最后祝你, ${list[i]}, 再见!`;
+}
