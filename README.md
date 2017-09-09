@@ -57,6 +57,13 @@ $ release
 - prepatch: 小版本预升级(1.4.2-rc.0)
 - current: 当前版本(1.4.1)
 
+## 配置
+
+现在允许用户自行配置源，并额外提供三个命令进行源管理
+
+- `release add`: 增加一个源
+- `release remove`: 删除一个源
+- `release list`: 查看配置的所有源
 
 ## 参考
 
