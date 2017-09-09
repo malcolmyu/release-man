@@ -18,7 +18,7 @@ program
   .action(add);
 
 program
-  .option('remove')
+  .command('remove')
   .description('remove namespace config')
   .action(remove);
 

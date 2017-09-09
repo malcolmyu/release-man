@@ -1,6 +1,6 @@
 {
   "name": "@wnpm/release-man",
-  "version": "1.3.2-alpha.3",
+  "version": "1.4.0",
   "description": "听说你发布新版本的时候特别的累",
   "files": [
     "*.md",

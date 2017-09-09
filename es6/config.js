@@ -31,8 +31,6 @@ export const getConfig = () => {
   return config;
 };
 
-const config = getConfig();
-
 const reURL = /^https?:\/\/[\w.:]+\/?$/;
 
 /**
@@ -42,7 +40,7 @@ const reURL = /^https?:\/\/[\w.:]+\/?$/;
  * website: 内部源网页，如 https://npm.taobao.org/
  */
 
-const addPrompts = [
+const addPrompts = config => [
   {
     type: 'input',
     name: 'namespace',
@@ -87,7 +85,7 @@ const addPrompts = [
   }
 ];
 
-const listPrompts = [
+const listPrompts = config => [
   {
     type: 'list',
     name: 'choice',
@@ -96,12 +94,12 @@ const listPrompts = [
   }
 ];
 
-const removePrompts = [
+const removePrompts = config => [
   {
     type: 'list',
     name: 'choice',
-    message: '请选择要查看的命名空间',
-    choices: config.map(v => v.namespace)
+    message: '请选择要删除的命名空间',
+    choices: config.filter(v => !v.official).map(v => v.namespace)
   },
   {
     type: 'confirm',
@@ -114,33 +112,36 @@ const removePrompts = [
 ];
 
 async function setConfig(conf) {
-  let spinner = ora({ text: '写入配置文件' });
+  let spinner = ora({ text: '操作成功, 已写入配置文件' });
   await ep(fs.writeFile)(configFile, JSON.stringify(conf));
   spinner.succeed();
   return conf;
 }
 
 export async function add(name) {
+  const config = getConfig();
   let conf;
   if (/^@/.test(name)) {
-    conf = await inquirer.prompt(addPrompts.slice(1));
+    conf = await inquirer.prompt(addPrompts(config).slice(1));
     conf.namespace = name;
   } else {
-    conf = await inquirer.prompt(addPrompts);
+    conf = await inquirer.prompt(addPrompts(config));
   }
   await setConfig(config.concat(conf));
   return conf;
 };
 
 export async function list() {
-  const { choice } = await inquirer.prompt(listPrompts);
+  const config = getConfig();
+  const { choice } = await inquirer.prompt(listPrompts(config));
   console.log(config.filter(v => v.namespace === choice)[0]);
 }
 
 export async function remove() {
-  const { choice, confirm } = await inquirer.prompt(removePrompts);
+  const config = getConfig();
+  const { choice, confirm } = await inquirer.prompt(removePrompts(config));
 
   if (confirm) {
-    await setConfig(config.filter(v => v.namespace === choice));
+    await setConfig(config.filter(v => v.namespace !== choice));
   }
 }
