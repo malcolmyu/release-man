@@ -13,33 +13,53 @@ $ npm install -g release-man
 
 ## 使用
 
+### 发布
+
 在要发布的工程目录下，命令行内输入 `release` 按照提示走就行了。
 
 ```bash
 $ release
-? 请输入要发布的版本号: 1.2.8-beta.2
-? 检测到版本号携带 tag, 是否添加 npm tag? Yes
-? 请输入要添加的 npm tag: beta
-? 是否同步到 github? Yes
-✔ 检查 npm 源
-✔ 更新 package.json 到: 1.2.8-beta.2
-✔ 推送本地代码到 gitlab
+? 请选择要发布的版本类型: ga: 正式版本
+? 请选择升版方式: prerelease: 预升级(1.4.1-alpha.2)
+? 是否同步代码到 github (小心安全组)? Yes
+✔ 检测 npm 源
+✔ 更新 package.json 到: 1.4.1-alpha.2
 ✔ 推送本地代码到 github
-✔ 发布新版本 1.2.8-beta.2 到 npm 源
-✔ 版本 1.2.8-beta.2 发布成功!
-✔ 最后祝您, 身体健康, 再见!
+✔ 发布新版本 1.4.1-alpha.2 到 npm 源
+? 请选择要同步的私有源: @cnpm(https://npm.taobao.org)
+✔ 同步到内网源
+✔ 版本 1.4.1-alpha.2 发布成功!
+✔ 最后祝你, 提乾涉经, 再见!
 ```
 
-![image](http://ww4.sinaimg.cn/large/7921624bgw1fb586xnb61g20ec0awhdt.gif)
+#### 版本类型
 
-## 流程
+提供四种可选择的版本类型，规范发版
 
-1. 输入版本号
-2. 如果版本号携带 tag（如 1.2.0-beta.1）会选择是否添加 npm-tag
-3. 选择是否同步代码到 github
-4. 如果发布版本相同，卸载当前版本（如果是 npm 源不卸载，线上如有当前版本阻止发布）
-5. 如果发布版本相同，删除版本对应的 git tag（本地和远程）
-6. 如果发布版本增加，更新 package.json
-7. 推送代码到 gitlab
-8. 如需推送到 github，推送代码到 github
-9. 发布到对应的 npm 源上（根据 name 判定，如果是 `@qnpm/xxx`，发到 qnpm 上；否则发到 npm 上）
+- ga: 正式版本
+- rc: 发布候选版本, 不会新增 feature
+- beta: 公测版, 会持续增加 feature
+- alpha: 内测版, 拥有成吨的 bug
+
+#### 升版方式
+
+选择正式版本 GA 之后会出现如下的升级方式：
+
+- major: 大版本升级(2.0.0)
+- minor: 中版本升级(1.5.0)
+- patch: 小版本升级(1.4.2)
+
+选择 rc/beta/alpha 后会出现如下的升级方式：
+
+- prerelease: 预升级(1.4.2-rc.0)
+- premajor: 大版本预升级(2.0.0-rc.0)
+- preminor: 中版本预升级(1.5.0-rc.0)
+- prepatch: 小版本预升级(1.4.2-rc.0)
+- current: 当前版本(1.4.1)
+
+
+## 参考
+
+- [npm-version](https://docs.npmjs.com/cli/version)
+- [npm-semver](https://www.npmjs.com/package/semver)
+- [软件发布生命周期](https://en.wikipedia.org/wiki/Software_release_life_cycle)
