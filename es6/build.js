@@ -133,6 +133,8 @@ export default async () => {
       global.npmInfo = null;
     }
 
+    console.log(global.npmInfo.versions);
+
     if (cVersion === version) {
       if (official) {
         // 发布到 npm 源
