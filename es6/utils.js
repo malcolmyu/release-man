@@ -54,6 +54,7 @@ export function sync(name, urlList) {
 
 export async function spinning(msg, cb) {
   const spinner = ora(msg);
+  spinner.start();
   const result = await cb(spinner);
   result
     ? spinner.succeed()

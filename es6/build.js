@@ -20,7 +20,7 @@ const pkg = fs.readFileSync(pkgPath, 'utf8');
 const content = JSON.parse(pkg);
 const rNameSpace = /^(@\w+)\//;
 
-let spinner = ora({ text: '检查 npm 源' });
+let spinner;
 
 /**
  * 逻辑发生变更
@@ -115,7 +115,6 @@ export default async () => {
     if (!conf) {
       log.error(`未检测到名为 ${ns} 的内部空间，请进行配置`);
       conf = await add(ns);
-      console.log(conf);
       config = getConfig();
     }
 
