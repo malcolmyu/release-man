@@ -186,7 +186,16 @@ export default async () => {
       spinner.succeed();
     }
 
-    await ep(exec)(`git tag ${nextRef}`);
+    try {
+      await ep(exec)(`git tag ${nextRef}`);
+    } catch (e) {
+      if (/already exists/.test(e.message)) {
+        await ep(exec)(`git tag -d ${nextRef}`);
+        await ep(exec)(`git tag ${nextRef}`);
+      } else {
+        throw e;
+      }
+    }
 
     // 本地源各种推代码和推分支
     if (remote.github !== 'origin') {
