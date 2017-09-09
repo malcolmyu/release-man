@@ -133,16 +133,9 @@ export default async () => {
       global.npmInfo = null;
     }
 
-    console.log(global.npmInfo.versions);
-
-    if (cVersion === version) {
+    if (global.npmInfo && global.npmInfo.versions.indexOf(version) > -1) {
       if (official) {
-        // 发布到 npm 源
-        if (global.npmInfo && global.npmInfo.versions.indexOf(version) > -1) {
-          throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
-        }
-        delete global.npmInfo;
-        spinner.succeed();
+        throw new Error(`npm 源上已存在 ${version} 版本, 请不要重复发布!`);
       } else {
         spinner.text = `移除私有源上已发布的版本 ${name}@${version}`;
         await ep(exec)(`npm unpublish ${name}@${version} --registry=${conf.registry}`);
