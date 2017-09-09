@@ -56,17 +56,19 @@ const inc = (version, tag) => {
     { key: 'prepatch', desc: '小版本预升级' }
   ];
 
-  return method
-    // 非正式版只能发 pre-tag
-    .filter(v => {
-      const pre = /^pre/.test(v.key);
-      const ga = tag === 'ga';
-      return ga ^ pre;
-    })
-    .map(m => {
-      const v = semver.inc(version, m.key, tag);
-      return `${m.key}: ${m.desc}(${v})`;
-    });
+  // 非正式版只能发 pre-tag
+  const m = method.filter(v => {
+    const pre = /^pre/.test(v.key);
+    const ga = tag === 'ga';
+    return ga ^ pre;
+  });
+
+  m.push({ key: 'current', desc: '当前版本' });
+
+  return m.map(m => {
+    const v = m.key === 'current' ? version : semver.inc(version, m.key, tag);
+    return `${m.key}: ${m.desc}(${v})`;
+  });
 };
 
 const tagPrompt = [
