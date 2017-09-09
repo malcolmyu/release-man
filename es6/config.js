@@ -11,13 +11,13 @@ const DEFAULT_CONFIG = [
   {
     namespace: 'npm(official)',
     official: true,
-    registry: 'https://registry.npmjs.org/',
-    website: 'https://npmjs.org/'
+    registry: 'https://registry.npmjs.org',
+    website: 'https://npmjs.org'
   },
   {
     namespace: '@cnpm',
-    registry: 'https://registry.npm.taobao.org/',
-    website: 'https://npm.taobao.org/'
+    registry: 'https://registry.npm.taobao.org',
+    website: 'https://npm.taobao.org'
   }
 ];
 
@@ -128,7 +128,8 @@ export async function add(name) {
   } else {
     conf = await inquirer.prompt(addPrompts);
   }
-  return await setConfig(config.concat(conf));
+  await setConfig(config.concat(conf));
+  return conf;
 };
 
 export async function list() {
