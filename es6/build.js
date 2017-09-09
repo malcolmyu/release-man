@@ -79,6 +79,42 @@ const tagPrompt = [
   }
 ];
 
+const removeGitTag = async (nextRef, remote, github) => {
+  spinner = ora({ text: `移除本地 tag: ${nextRef}` });
+  spinner.start();
+  try {
+    await ep(exec)(`git tag -d ${nextRef}`);
+    spinner.succeed();
+  } catch (e) {
+    spinner.text = `本地不存在 ${nextRef} tag`;
+    spinner.stopAndPersist('◎');
+  }
+
+  if (remote.github !== 'origin') {
+    spinner = ora({ text: `移除 origin 远端 tag: ${nextRef}` });
+    spinner.start();
+    try {
+      await ep(exec)(`git push origin -d tag ${nextRef}`);
+      spinner.succeed();
+    } catch (e) {
+      spinner.text = `origin 上不存在 ${nextRef} tag`;
+      spinner.stopAndPersist('◎');
+    }
+  }
+
+  if (github && remote.github) {
+    spinner = ora({ text: `移除 github 远端 tag: ${nextRef}` });
+    spinner.start();
+    try {
+      await ep(exec)(`git push ${remote.github} -d tag ${nextRef}`);
+      spinner.succeed();
+    } catch (e) {
+      spinner.text = `github 上不存在 ${nextRef} tag`;
+      spinner.stopAndPersist('◎');
+    }
+  }
+};
+
 // TODO: 把代码拆一拆
 export default async () => {
   const cVersion = content.version;
@@ -141,40 +177,8 @@ export default async () => {
         await ep(exec)(`npm unpublish ${name}@${version} --registry=${conf.registry}`);
         spinner.text = `${name}@${version} 已 unpublish`;
         spinner.succeed();
-      }
 
-      spinner = ora({ text: `移除本地 tag: ${nextRef}` });
-      spinner.start();
-      try {
-        await ep(exec)(`git tag -d ${nextRef}`);
-        spinner.succeed();
-      } catch (e) {
-        spinner.text = `本地不存在 ${nextRef} tag`;
-        spinner.stopAndPersist('◎');
-      }
-
-      if (remote.github !== 'origin') {
-        spinner = ora({ text: `移除 origin 远端 tag: ${nextRef}` });
-        spinner.start();
-        try {
-          await ep(exec)(`git push origin -d tag ${nextRef}`);
-          spinner.succeed();
-        } catch (e) {
-          spinner.text = `origin 上不存在 ${nextRef} tag`;
-          spinner.stopAndPersist('◎');
-        }
-      }
-
-      if (github && remote.github) {
-        spinner = ora({ text: `移除 github 远端 tag: ${nextRef}` });
-        spinner.start();
-        try {
-          await ep(exec)(`git push ${remote.github} -d tag ${nextRef}`);
-          spinner.succeed();
-        } catch (e) {
-          spinner.text = `github 上不存在 ${nextRef} tag`;
-          spinner.stopAndPersist('◎');
-        }
+        await removeGitTag(nextRef, remote, github);
       }
     } else {
       // 检查 npm 源成功
@@ -189,8 +193,8 @@ export default async () => {
     try {
       await ep(exec)(`git tag ${nextRef}`);
     } catch (e) {
-      if (/already exists/.test(e.message)) {
-        await ep(exec)(`git tag -d ${nextRef}`);
+      if (/exists/.test(e.message)) {
+        await removeGitTag(nextRef, remote, github);
         await ep(exec)(`git tag ${nextRef}`);
       } else {
         throw e;
