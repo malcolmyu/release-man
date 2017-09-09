@@ -5,8 +5,7 @@ import { add, list, remove } from './config';
 import pkgJSON from '../package.json';
 
 program
-  .version(pkgJSON.version)
-  .action(publish);
+  .version(pkgJSON.version);
 
 program
   .command('list')
@@ -14,13 +13,17 @@ program
   .action(list);
 
 program
-  .command('add')
+  .command('add [name]')
   .description('add namespace config')
   .action(add);
 
 program
-  .option('remove <name>')
+  .option('remove')
   .description('remove namespace config')
   .action(remove);
 
 program.parse(process.argv);
+
+if (!program.args.length) {
+  publish();
+}

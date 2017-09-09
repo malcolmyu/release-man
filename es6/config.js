@@ -10,17 +10,18 @@ const configFile = path.join(home, '.release-man-config');
 const DEFAULT_CONFIG = [
   {
     namespace: 'npm(official)',
+    official: true,
     registry: 'https://registry.npmjs.org/',
     website: 'https://npmjs.org/'
   },
   {
     namespace: '@cnpm',
-    registry: 'https://registry.npm.taobao.org',
+    registry: 'https://registry.npm.taobao.org/',
     website: 'https://npm.taobao.org/'
   }
 ];
 
-const getConfig = () => {
+export const getConfig = () => {
   let config = DEFAULT_CONFIG;
 
   try {
@@ -31,6 +32,8 @@ const getConfig = () => {
 };
 
 const config = getConfig();
+
+const reURL = /^https?:\/\/[\w.:]+\/?$/;
 
 /**
  * 配置文件
@@ -43,8 +46,7 @@ const addPrompts = [
   {
     type: 'input',
     name: 'namespace',
-    message: '请输入内部源命名空间:',
-    default: '@cnpm',
+    message: '请输入内部源命名空间(如 @cnpm):',
     validate: (v) => {
       const ns = config.map(v => v.namespace);
 
@@ -62,14 +64,26 @@ const addPrompts = [
   {
     type: 'input',
     name: 'registry',
-    message: '请输入内部源:',
-    default: config.registry || 'https://registry.npm.taobao.org'
+    message: '请输入内部源(如 https://registry.npm.taobao.org)\n:',
+    validate: (v) => {
+      if (!reURL.test(v)) {
+        return `内部源 ${v} 不是合法的网址`;
+      }
+
+      return true;
+    }
   },
   {
     type: 'input',
     name: 'website',
-    message: '请输入内部源页面地址以便同步:',
-    default: config.website || 'https://npm.taobao.org'
+    message: '请输入内部源页面地址(便于发外网时同步 如 https://npm.taobao.org)\n:',
+    validate: (v) => {
+      if (v && !reURL.test(v)) {
+        return `内部源页面地址 ${v} 不是合法的网址`;
+      }
+
+      return true;
+    }
   }
 ];
 
@@ -106,8 +120,13 @@ async function setConfig(conf) {
   return conf;
 }
 
-export async function add() {
-  const conf = await inquirer.prompt(addPrompts);
+export async function add(name) {
+  let conf;
+  if (/^@/.test(name)) {
+    conf = await inquirer.prompt(addPrompts.slice(1));
+  } else {
+    conf = await inquirer.prompt(addPrompts);
+  }
   return await setConfig(config.concat(conf));
 };
 
@@ -116,7 +135,7 @@ export async function list() {
   console.log(config.filter(v => v.namespace === choice)[0]);
 }
 
-export async function remove(name) {
+export async function remove() {
   const { choice, confirm } = await inquirer.prompt(removePrompts);
 
   if (confirm) {

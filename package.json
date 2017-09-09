@@ -1,6 +1,6 @@
 {
-  "name": "release-man",
-  "version": "1.3.1",
+  "name": "@wnpm/release-man",
+  "version": "1.3.2-alpha.0",
   "description": "听说你发布新版本的时候特别的累",
   "files": [
     "*.md",
@@ -33,7 +33,8 @@
     "es6-promisify": "^5.0.0",
     "inquirer": "^2.0.0",
     "node-fetch": "^1.6.3",
-    "ora": "^0.4.0"
+    "ora": "^0.4.0",
+    "semver": "^5.4.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
