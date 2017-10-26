@@ -263,7 +263,13 @@ export default async () => {
         spinner.text = '未选择内网源';
         spinner.stopAndPersist('◎');
       } else {
-        await sync(name, urlList);
+        try {
+          await sync(name, urlList);
+        } catch (e) {
+          // 同步失败根本无所谓啦
+          spinner.text = '同步内网源失败，请检查当前是否是内网环境';
+          spinner.fail();
+        }
         spinner.succeed();
       }
     }
