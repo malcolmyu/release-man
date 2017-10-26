@@ -189,7 +189,12 @@ export default async () => {
       spinner = ora({ text: `更新 package.json 到: ${version}` });
       spinner.start();
       await updateVersion(version);
-      await ep(exec)(`git commit -am "chore: Version to ${version}"`);
+      try {
+        await ep(exec)(`git commit -am "chore: Version to ${version}"`);
+      } catch (e) {
+        // 在没有改动的情况下极有可能提交不上
+        // 其实这里提交不上也没关系，无所谓的
+      }
       spinner.succeed();
     }
 
