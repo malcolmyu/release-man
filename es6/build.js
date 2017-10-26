@@ -123,6 +123,7 @@ export default async () => {
   const cVersion = content.version;
   const { tag } = await inquirer.prompt(tagPrompt);
   let config = getConfig();
+  spinner = ora({ text: '检测 npm 源' });
 
   const questions = [
     {
@@ -159,7 +160,6 @@ export default async () => {
 
     if (github && !remote.github) throw new Error('本地无法找到 github 的 remote!');
 
-    spinner = ora({ text: '检测 npm 源' });
     spinner.start();
 
     try {
